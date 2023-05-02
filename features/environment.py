@@ -5,13 +5,13 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 from app.application import Application
 
 
-def browser_init(context):
+def browser_init(context, test_name):
     """
     :param context: Behave context
     """
 #Chrome
-    service = ChromeService("C:\\Users\\belar\\Automation\\python-selenium-automation\\chromedriver.exe")
-    context.driver = webdriver.Chrome(service=service)
+    #service = ChromeService("C:\\Users\\belar\\Automation\\python-selenium-automation\\chromedriver.exe")
+    #context.driver = webdriver.Chrome(service=service)
 
 #Firefox
     #binary_path = "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
@@ -35,6 +35,22 @@ def browser_init(context):
 #Safari
     # context.browser = webdriver.Safari()
 
+    # for browerstack ###
+    # Register for BrowserStack, then grab it from https://www.browserstack.com/accounts/settings
+    bs_user = 'natalliamialeshk_CT2fb3'
+    bs_key = 'NKkh9hGzhxgyAo3LVgTq'
+
+    desired_cap = {
+        'browserName': 'Chrome',  # Safari or FireFox
+        'bstack:options': {
+            'os': 'OS X',
+            'osVersion': 'Ventura',
+            'sessionName': test_name
+        }
+    }
+    url = f'http://{bs_user}:{bs_key}@hub-cloud.browserstack.com/wd/hub'
+    context.driver = webdriver.Remote(url, desired_capabilities=desired_cap)
+
     context.driver.maximize_window()
     context.driver.implicitly_wait(5)
     context.driver.wait = WebDriverWait(context.driver, 10)
@@ -43,7 +59,9 @@ def browser_init(context):
 
 def before_scenario(context, scenario):
     print('\nStarted scenario: ', scenario.name)
-    browser_init(context)
+    #browser_init(context)
+    # for browerstack
+    browser_init(context, scenario.name)
 
 
 def before_step(context, step):
