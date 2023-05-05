@@ -2,10 +2,12 @@ from selenium import webdriver
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FirefoxService
+from selenium.webdriver.chrome.options import Options
 from app.application import Application
 
 
-def browser_init(context, test_name):
+#should add parameter "test_name" for browserstack after context
+def browser_init(context):
     """
     :param context: Behave context
     """
@@ -37,31 +39,37 @@ def browser_init(context, test_name):
 
     # for browerstack ###
     # Register for BrowserStack, then grab it from https://www.browserstack.com/accounts/settings
-    bs_user = 'natalliamialeshk_CT2fb3'
-    bs_key = 'NKkh9hGzhxgyAo3LVgTq'
+    #bs_user = 'natalliamialeshk_CT2fb3'
+    #bs_key = 'NKkh9hGzhxgyAo3LVgTq'
 
-    desired_cap = {
-        'browserName': 'Chrome',  # Safari or FireFox
-        'bstack:options': {
-            'os': 'OS X',
-            'osVersion': 'Ventura',
-            'sessionName': test_name
-        }
-    }
-    url = f'http://{bs_user}:{bs_key}@hub-cloud.browserstack.com/wd/hub'
-    context.driver = webdriver.Remote(url, desired_capabilities=desired_cap)
+    #desired_cap = {
+     #   'browserName': 'Chrome',  # Safari or FireFox
+      #  'bstack:options': {
+       #     'os': 'OS X',
+        #    'osVersion': 'Ventura',
+         #   'sessionName': test_name
+        #}
+    #}
+    #url = f'http://{bs_user}:{bs_key}@hub-cloud.browserstack.com/wd/hub'
+    #context.driver = webdriver.Remote(url, desired_capabilities=desired_cap)
+
+    # For Chrome Driver mobile Emulation
+    mobile_emulation = {"deviceName": "iPhone 13 Pro"}
+    chrome_options = Options()
+    chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
+    context.driver = webdriver.Chrome(chrome_options=chrome_options)
 
     context.driver.maximize_window()
     context.driver.implicitly_wait(5)
-    context.driver.wait = WebDriverWait(context.driver, 10)
+    context.driver.wait = WebDriverWait(context.driver, 15)
     context.app = Application(driver=context.driver)
 
 
 def before_scenario(context, scenario):
     print('\nStarted scenario: ', scenario.name)
-    #browser_init(context)
+    browser_init(context)
     # for browerstack
-    browser_init(context, scenario.name)
+    #browser_init(context, scenario.name)
 
 
 def before_step(context, step):
